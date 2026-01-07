@@ -28,6 +28,49 @@ UI.scrollFrame = nil
 UI.entryRows = {}
 UI.rowHeight = 20
 UI.maxVisibleRows = 15
+UI.sortBy = "time"  -- Default sort column
+UI.sortAsc = false  -- Default to descending (newest first)
+
+-- Column layout: proportional widths (0-1) and minimum pixel widths
+UI.columnLayout = {
+    {name = "Dungeon", proportion = 0.35, minWidth = 180},
+    {name = "Role/Class", proportion = 0.20, minWidth = 120},
+    {name = "Player", proportion = 0.25, minWidth = 140},
+    {name = "Level", proportion = 0.10, minWidth = 60},
+    {name = "Time", proportion = 0.10, minWidth = 80}
+}
+
+-- Calculate column positions and widths based on frame width
+function UI:CalculateColumnLayout(frameWidth)
+    local leftPadding = 15
+    local rightPadding = 40  -- Account for scrollbar
+    local availableWidth = frameWidth - leftPadding - rightPadding
+
+    local columns = {}
+    local x = leftPadding
+
+    -- Sum min widths and proportions
+    local sumMin, sumProp = 0, 0
+    for _, c in ipairs(self.columnLayout) do
+        sumMin = sumMin + (c.minWidth or 0)
+        sumProp = sumProp + (c.proportion or 0)
+    end
+
+    -- Ensure we never allocate below min widths; distribute any remaining space
+    local remaining = math.max(0, availableWidth - sumMin)
+
+    for _, col in ipairs(self.columnLayout) do
+        local bonus = 0
+        if sumProp > 0 and remaining > 0 then
+            bonus = remaining * (col.proportion / sumProp)
+        end
+        local width = (col.minWidth or 0) + bonus
+        table.insert(columns, { name = col.name, x = x, width = width })
+        x = x + width
+    end
+
+    return columns
+end
 
 -- Initialize the UI
 function UI:Initialize()
@@ -49,8 +92,40 @@ function UI:CreateMainFrame()
     end
     
     local frame = CreateFrame("Frame", "RoleCallMainFrame", UIParent, "BackdropTemplate")
-    frame:SetSize(600, 400)
+    frame:SetSize(700, 420)
     frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    -- Enable dragging of the board
+    frame:EnableMouse(true)
+    frame:SetMovable(true)
+    frame:SetClampedToScreen(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
+    frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+    -- Enable resizing
+    frame:SetResizable(true)
+    -- Compute minimum frame width from column minimums and paddings to ensure all columns visible
+    local minWidth = (function()
+        local sumMin = 0
+        for _, c in ipairs(UI.columnLayout) do
+            sumMin = sumMin + (c.minWidth or 0)
+        end
+        local leftPadding = 15
+        local rightPadding = 40
+        return sumMin + leftPadding + rightPadding
+    end)()
+    frame:SetResizeBounds(minWidth, 260, 1400, 900)
+    
+    -- Handle resize to update scroll frame
+    frame:SetScript("OnSizeChanged", function(self, width, height)
+        if UI.scrollFrame then
+            -- Update scroll frame size when window is resized
+            UI.scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -60)
+            UI.scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 10)
+        end
+        -- Refresh to recalculate column positions
+        UI:UpdateColumnHeaders()
+        UI:Refresh()
+    end)
     ApplyBackdrop(frame, {
         bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
         edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
@@ -70,17 +145,91 @@ function UI:CreateMainFrame()
     closeBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
     closeBtn:SetScript("OnClick", function() UI:Hide() end)
     
-    -- Column headers
-    local headers = {"Dungeon", "Roles", "Player", "Level", "Time"}
-    local headerX = {20, 150, 280, 420, 480}
+    -- Resize grip
+    local resizeBtn = CreateFrame("Button", nil, frame)
+    resizeBtn:SetSize(20, 20)
+    resizeBtn:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 5, 5)
+    resizeBtn:EnableMouse(true)
+    resizeBtn:SetFrameLevel(frame:GetFrameLevel() + 10)
     
-    for i, header in ipairs(headers) do
+    -- Create visible texture for resize grip
+    local resizeTex = resizeBtn:CreateTexture(nil, "ARTWORK")
+    resizeTex:SetAllPoints()
+    resizeTex:SetColorTexture(0.5, 0.5, 0.5, 0.8)  -- Gray square for visibility
+    
+    -- Add diagonal lines to indicate resize
+    local line1 = resizeBtn:CreateTexture(nil, "OVERLAY")
+    line1:SetColorTexture(0.8, 0.8, 0.8, 1)
+    line1:SetSize(2, 14)
+    line1:SetPoint("BOTTOMLEFT", resizeBtn, "BOTTOMLEFT", 4, 4)
+    line1:SetRotation(math.rad(45))
+    
+    resizeBtn:SetScript("OnMouseDown", function(self, button)
+        if button == "LeftButton" then
+            frame:StartSizing("BOTTOMLEFT")
+        end
+    end)
+    resizeBtn:SetScript("OnMouseUp", function(self, button)
+        if button == "LeftButton" then
+            frame:StopMovingOrSizing()
+        end
+    end)
+    resizeBtn:SetScript("OnEnter", function(self)
+        resizeTex:SetColorTexture(0.7, 0.7, 0.7, 1)
+    end)
+    resizeBtn:SetScript("OnLeave", function(self)
+        resizeTex:SetColorTexture(0.5, 0.5, 0.5, 0.8)
+    end)
+    
+    -- Column headers
+    frame.headerTexts = {}
+    frame.headerButtons = {}
+    
+    local columns = self:CalculateColumnLayout(frame:GetWidth())
+    
+    for i, col in ipairs(columns) do
         local h = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        h:SetPoint("TOPLEFT", frame, "TOPLEFT", headerX[i], -40)
-        h:SetText(header)
+        h:SetPoint("TOPLEFT", frame, "TOPLEFT", col.x, -40)
+        h:SetSize(col.width, 20)
+        h:SetJustifyH("LEFT")
+        h:SetWordWrap(false)
+        h:SetText(col.name)
+        frame.headerTexts[i] = h
+        
+        -- Make header clickable for sorting
+        local headerBtn = CreateFrame("Button", nil, frame)
+        headerBtn:SetPoint("TOPLEFT", frame, "TOPLEFT", col.x - 5, -40)
+        headerBtn:SetWidth(col.width)
+        headerBtn:SetHeight(20)
+        headerBtn:SetScript("OnClick", function()
+            local sortCol = string.lower(col.name)
+            if sortCol == "role/class" then sortCol = "role" end
+            UI:SetSort(sortCol)
+        end)
+        frame.headerButtons[i] = headerBtn
     end
     
     self.frame = frame
+end
+
+-- Update column header positions when frame is resized
+function UI:UpdateColumnHeaders()
+    if not self.frame then return end
+    
+    local columns = self:CalculateColumnLayout(self.frame:GetWidth())
+    
+    for i, col in ipairs(columns) do
+        if self.frame.headerTexts[i] then
+            self.frame.headerTexts[i]:ClearAllPoints()
+            self.frame.headerTexts[i]:SetPoint("TOPLEFT", self.frame, "TOPLEFT", col.x, -40)
+            self.frame.headerTexts[i]:SetSize(col.width, 20)
+        end
+        if self.frame.headerButtons[i] then
+            self.frame.headerButtons[i]:ClearAllPoints()
+            self.frame.headerButtons[i]:SetPoint("TOPLEFT", self.frame, "TOPLEFT", col.x - 5, -40)
+            self.frame.headerButtons[i]:SetWidth(col.width)
+        end
+    end
 end
 
 -- Create scrollable area
@@ -105,6 +254,53 @@ function UI:CreateScrollFrame()
     self.contentFrame = contentFrame
 end
 
+-- Set sort column and direction, then refresh
+function UI:SetSort(column)
+    -- Toggle sort direction if clicking same column, otherwise set new column
+    if self.sortBy == column then
+        self.sortAsc = not self.sortAsc
+    else
+        self.sortBy = column
+        self.sortAsc = false  -- Default to descending for new column
+    end
+    self:Refresh()
+end
+
+-- Sort entries based on current sort settings
+function UI:SortEntries(entries)
+    local sortBy = self.sortBy
+    local sortAsc = self.sortAsc
+    
+    table.sort(entries, function(a, b)
+        local aVal, bVal
+        
+        if sortBy == "dungeon" then
+            aVal = a.dungeon or ""
+            bVal = b.dungeon or ""
+        elseif sortBy == "role" then
+            aVal = a.classes and #a.classes > 0 and table.concat(a.classes, ",") or ""
+            bVal = b.classes and #b.classes > 0 and table.concat(b.classes, ",") or ""
+        elseif sortBy == "player" then
+            aVal = a.player or ""
+            bVal = b.player or ""
+        elseif sortBy == "level" then
+            aVal = a.level or 0
+            bVal = b.level or 0
+        else  -- "time" or default
+            aVal = a.timestamp or 0
+            bVal = b.timestamp or 0
+        end
+        
+        if sortAsc then
+            return aVal < bVal
+        else
+            return aVal > bVal
+        end
+    end)
+    
+    return entries
+end
+
 -- Create or update entry rows
 function UI:Refresh()
     if not self.frame or not self.contentFrame then
@@ -117,6 +313,9 @@ function UI:Refresh()
     end
     
     local entries = RoleCall:GetAllEntries()
+    
+    -- Sort entries
+    entries = self:SortEntries(entries)
     
     -- Clear existing rows
     for _, row in ipairs(self.entryRows) do
@@ -140,9 +339,11 @@ end
 
 -- Create a single entry row
 function UI:CreateEntryRow(index, entry)
-    if not self.contentFrame then
+    if not self.contentFrame or not self.frame then
         return nil
     end
+    
+    local columns = self:CalculateColumnLayout(self.frame:GetWidth())
     
     local row = CreateFrame("Button", "RoleCallRow" .. index, self.contentFrame, "BackdropTemplate")
     row:SetSize(self.contentFrame:GetWidth(), self.rowHeight)
@@ -167,24 +368,41 @@ function UI:CreateEntryRow(index, entry)
         text:SetPoint("TOPLEFT", row, "TOPLEFT", x, -2)
         text:SetSize(width, self.rowHeight)
         text:SetJustifyH("LEFT")
+        text:SetWordWrap(false)
         return text
     end
     
-    row.dungeon = CreateColumnText(5, 140)
-    row.roles = CreateColumnText(150, 120)
-    row.player = CreateColumnText(280, 130)
-    row.level = CreateColumnText(420, 50)
-    row.time = CreateColumnText(480, 80)
+    row.dungeon = CreateColumnText(columns[1].x, columns[1].width)
+    row.roles = CreateColumnText(columns[2].x, columns[2].width)
+    row.player = CreateColumnText(columns[3].x, columns[3].width)
+    row.level = CreateColumnText(columns[4].x, columns[4].width)
+    row.time = CreateColumnText(columns[5].x, columns[5].width)
     
     -- Populate text
-    row.dungeon:SetText(entry.dungeon or "?")
+    local displayName = entry.dungeon
+    if Parser and entry.dungeon ~= "?" then
+        displayName = Parser:GetDungeonDisplayName(entry.dungeon)
+    end
+    row.dungeon:SetText(displayName or "?")
+    
+    -- Highlight context-only entries (no specific dungeon)
+    if entry.dungeon == "?" then
+        row.dungeon:SetTextColor(0.7, 0.7, 0.7)  -- Gray out uncertain dungeon
+    end
     
     -- Format roles
-    local roleList = {}
-    if entry.roles.tank then table.insert(roleList, "T") end
-    if entry.roles.healer then table.insert(roleList, "H") end
-    if entry.roles.dps then table.insert(roleList, "D") end
-    row.roles:SetText(table.concat(roleList, ", ") or "-")
+    local roleClassText = ""
+    if entry.classes and #entry.classes > 0 then
+        roleClassText = table.concat(entry.classes, ", ")
+    else
+        -- Build from roles
+        local roleList = {}
+        if entry.roles.tank then table.insert(roleList, "Tank") end
+        if entry.roles.healer then table.insert(roleList, "Healer") end
+        if entry.roles.dps then table.insert(roleList, "DPS") end
+        roleClassText = table.concat(roleList, ", ") or "-"
+    end
+    row.roles:SetText(roleClassText)
     
     row.player:SetText(entry.player or "?")
     row.level:SetText(entry.level and tostring(entry.level) or "?")

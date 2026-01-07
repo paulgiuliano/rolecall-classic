@@ -1,0 +1,23 @@
+# Deployment script (local paths)
+deploy.ps1
+
+# Local notes and starters
+STARTER.md
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+

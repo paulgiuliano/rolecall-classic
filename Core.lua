@@ -16,10 +16,28 @@ local MONITORED_CHANNELS = {
     ["Trade"] = true,
 }
 
+-- Normalize channel name from message payload (e.g., "Trade - Ironforge" -> "Trade")
+local function NormalizeChannelName(name)
+    if not name or type(name) ~= "string" then return nil end
+    -- Remove optional leading index like "1. "
+    name = name:gsub("^%s*%d+%s*%.%s*", "")
+    -- Strip zone suffix after " - "
+    local base = name:match("^(.-)%s*%-%s*") or name
+    -- Trim whitespace
+    base = base:gsub("^%s+", ""):gsub("%s+$", "")
+    return base
+end
+
 -- Handle chat messages
 function Core:OnChatMessage(event, message, author, language, channelName, playerName, flags, unknown, channelNumber, lineID, guid, bnSenderID, isMobile, isSystemMessage, autoTranslated)
-    -- Only process messages from monitored channels
-    if not MONITORED_CHANNELS[channelName] then
+    -- Only process messages from monitored channels (for CHANNEL events)
+    if event == "CHAT_MSG_CHANNEL" then
+        local base = NormalizeChannelName(channelName)
+        if not (base and MONITORED_CHANNELS[base]) then
+            return
+        end
+    else
+        -- Ignore SAY/YELL unless needed in future
         return
     end
     

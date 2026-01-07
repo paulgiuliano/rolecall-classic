@@ -23,12 +23,15 @@ local DUNGEON_ALIASES = {
     ["ubrs"] = "UBRS",
     ["upper blackrock"] = "UBRS",
     
-    -- World Bosses
+    -- Dire Maul
     ["dm"] = "DM",
     ["dire maul"] = "DM",
     ["dm-n"] = "DM-N",
     ["dm-e"] = "DM-E",
     ["dm-w"] = "DM-W",
+    ["dmf"] = "DMF",
+    ["darkmoon faire"] = "DMF",
+    ["darkmoon"] = "DMF",
     
     -- Low level dungeons
     ["sm"] = "SM",
@@ -46,6 +49,19 @@ local DUNGEON_ALIASES = {
     ["uldaman"] = "Uldaman",
     ["rfc"] = "Ragefire",
     
+    -- Raids
+    ["zg"] = "ZG",
+    ["aq20"] = "AQ20",
+    ["a20"] = "AQ20",
+    ["aq40"] = "AQ40",
+    ["a40"] = "AQ40",
+    ["bwl"] = "BWL",
+    ["blackwing"] = "BWL",
+    ["molten core"] = "MC",
+    ["mc"] = "MC",
+    ["naxx"] = "NAXX",
+    ["naxxramas"] = "NAXX",
+    
     -- TBC dungeons
     ["blood furnace"] = "Blood Furnace",
     ["shattered halls"] = "Shattered Halls",
@@ -53,13 +69,67 @@ local DUNGEON_ALIASES = {
     ["underbog"] = "Underbog",
     ["sethekk"] = "Sethekk Halls",
     ["durnhold"] = "Durnhold",
+    
+    -- Other instances
+    ["zf"] = "Zul'Farrak",
+    ["zul farrak"] = "Zul'Farrak",
 }
 
--- Role keywords
+-- Full names for normalized dungeon names (for display)
+local DUNGEON_FULL_NAMES = {
+    ["BRD"] = "Blackrock Depths (BRD)",
+    ["Strat"] = "Stratholme (Strat)",
+    ["Strat Live"] = "Stratholme Live (Strat Live)",
+    ["Strat UD"] = "Stratholme Undead (Strat UD)",
+    ["Scholo"] = "Scholomance (Scholo)",
+    ["UBRS"] = "Upper Blackrock Spire (UBRS)",
+    ["DM"] = "Dire Maul (DM)",
+    ["DM-N"] = "Dire Maul North (DM-N)",
+    ["DM-E"] = "Dire Maul East (DM-E)",
+    ["DM-W"] = "Dire Maul West (DM-W)",
+    ["DMF"] = "Darkmoon Faire (DMF)",
+    ["SM"] = "Shadowfang Keep (SM)",
+    ["SM Cath"] = "Shadowfang Keep Cathedral (SM Cath)",
+    ["SM Armory"] = "Shadowfang Keep Armory (SM Armory)",
+    ["SM Library"] = "Shadowfang Keep Library (SM Library)",
+    ["SM Graveyard"] = "Shadowfang Keep Graveyard (SM Graveyard)",
+    ["BFD"] = "Blackfathom Deeps (BFD)",
+    ["Wailing Caverns"] = "Wailing Caverns (WC)",
+    ["Uldaman"] = "Uldaman (VC)",
+    ["Ragefire"] = "Ragefire Chasm (RFC)",
+    ["ZG"] = "Zul'Aman (ZG)",
+    ["AQ20"] = "Temple of Ahn'Qiraj (AQ20)",
+    ["AQ40"] = "Temple of Ahn'Qiraj (AQ40)",
+    ["BWL"] = "Blackwing Lair (BWL)",
+    ["MC"] = "Molten Core (MC)",
+    ["NAXX"] = "Naxxramas (NAXX)",
+    ["Blood Furnace"] = "Blood Furnace (Blood Furnace)",
+    ["Shattered Halls"] = "Shattered Halls (Shattered Halls)",
+    ["Slave Pens"] = "Slave Pens (Slave Pens)",
+    ["Underbog"] = "Underbog (Underbog)",
+    ["Sethekk Halls"] = "Sethekk Halls (Sethekk Halls)",
+    ["Durnhold"] = "Durnhold (Durnhold)",
+    ["Zul'Farrak"] = "Zul'Farrak (ZF)",
+}
+
+-- Role keywords (actual roles and classes as indicators of LFG posts)
 local ROLE_KEYWORDS = {
-    tank = {"tank", "tanking", "prot"},
+    tank = {"tank", "tanking", "prot", "warrior", "paladin"},
     healer = {"healer", "healing", "heal", "resto", "priest", "shaman", "druid"},
-    dps = {"dps", "damage", "dd", "dagger", "rogue", "mage", "warlock"}
+    dps = {"dps", "damage", "dd", "dagger", "rogue", "mage", "warlock", "hunter"}
+}
+
+-- Class to role mapping (for extracting specific class names)
+local CLASS_TO_ROLE = {
+    ["warrior"] = "tank",
+    ["paladin"] = "tank",
+    ["priest"] = "healer",
+    ["shaman"] = "healer",
+    ["druid"] = "healer",
+    ["rogue"] = "dps",
+    ["mage"] = "dps",
+    ["warlock"] = "dps",
+    ["hunter"] = "dps"
 }
 
 -- Extract normalized dungeon from message
@@ -74,6 +144,11 @@ function Parser:ExtractDungeon(message)
     end
     
     return nil
+end
+
+-- Get full display name for a dungeon (e.g., "UBRS" -> "Upper Blackrock Spire (UBRS)")
+function Parser:GetDungeonDisplayName(normalizedName)
+    return DUNGEON_FULL_NAMES[normalizedName] or normalizedName
 end
 
 -- Extract roles from message
@@ -91,6 +166,20 @@ function Parser:ExtractRoles(message)
     end
     
     return roles
+end
+
+-- Extract specific class names from message (e.g., "Priest", "Mage", "Warrior")
+function Parser:ExtractClasses(message)
+    local classes = {}
+    local lower = string.lower(message)
+    
+    for class, _ in pairs(CLASS_TO_ROLE) do
+        if string.find(lower, class, 1, true) then
+            table.insert(classes, class:sub(1, 1):upper() .. class:sub(2))  -- Capitalize
+        end
+    end
+    
+    return classes
 end
 
 -- Extract player level from message (looks for numbers like 58, 60, etc)
@@ -131,18 +220,21 @@ end
 -- Main parsing function: convert raw message to structured intent
 function Parser:Parse(message, player)
     local dungeon = self:ExtractDungeon(message)
-    if not dungeon then
-        return nil  -- No dungeon found, skip this message
-    end
-    
     local roles = self:ExtractRoles(message)
+    local classes = self:ExtractClasses(message)
     local level = self:ExtractLevel(message)
     local lfm = self:IsLFM(message)
     
+    -- Allow parsing if dungeon is found OR if any role is explicitly mentioned (e.g., "LFM Mage")
+    if not dungeon and not (roles.tank or roles.healer or roles.dps) then
+        return nil  -- No dungeon and no roles, skip
+    end
+    
     return {
         player = player,
-        dungeon = dungeon,
+        dungeon = dungeon or "?",  -- Use "?" if no dungeon found
         roles = roles,
+        classes = classes,  -- List of specific classes mentioned
         level = level,
         lfm = lfm,
         rawMessage = message
