@@ -8,9 +8,12 @@ Designed for **Classic Anniversary servers** (e.g. Dreamscythe) with a clear tra
 
 ## Quick Start
 
-1. Copy this folder to your WoW Classic `Addons` directory
-2. Reload UI or restart WoW
-3. Type `/rc` to toggle the RoleCall board
+1. Copy the folder to your WoW Classic AddOns directory: `C:/Program Files (x86)/World of Warcraft/_classic_/Interface/AddOns/`
+2. Rename the copied folder to `RoleCall` so it matches the manifest filename `RoleCall.toc`.
+3. Ensure the files are directly inside `RoleCall` (no extra nested folder).
+4. On the character select screen, click AddOns and enable "Load out of date AddOns" if needed.
+5. Reload UI or restart WoW.
+6. Type `/rc` to toggle the RoleCall board.
 
 ## Features
 
@@ -117,6 +120,13 @@ RoleCall/
 - ✅ Classic API compliant (Interface 11500)
 - ✅ No external dependencies
 - ✅ No automation (fully manual, fully legal)
+
+## Installation Notes
+
+- Folder name must match the `.toc` filename. This addon’s manifest is `RoleCall.toc`, so the folder must be named `RoleCall`.
+- Final path should look like: `.../Interface/AddOns/RoleCall/` with these files inside: [RoleCall.toc](RoleCall.toc), [Core.lua](Core.lua), [Parser.lua](Parser.lua), [UI.lua](UI.lua), [Whisper.lua](Whisper.lua), [Data.lua](Data.lua).
+- If the addon does not appear in the AddOns list, double-check for an extra nested folder (e.g., `RoleCall/rolecall-classic/`), and move files up one level.
+- If your client’s Interface number is newer than `11500`, toggle "Load out of date AddOns" to allow loading until the manifest is updated.
 
 ## Development Notes
 
