@@ -1,0 +1,92 @@
+-- Core.lua
+-- Event handling and chat message capture
+
+local Core = {}
+
+-- Initialize event frame
+local eventFrame = CreateFrame("Frame", "RoleCallEventFrame")
+eventFrame:RegisterEvent("CHAT_MSG_CHANNEL")
+eventFrame:RegisterEvent("CHAT_MSG_SAY")
+eventFrame:RegisterEvent("CHAT_MSG_YELL")
+eventFrame:RegisterEvent("ADDON_LOADED")
+
+-- Chat channels to monitor
+local MONITORED_CHANNELS = {
+    ["LookingForGroup"] = true,
+    ["Trade"] = true,
+}
+
+-- Handle chat messages
+function Core:OnChatMessage(event, message, author, language, channelName, playerName, flags, unknown, channelNumber, lineID, guid, bnSenderID, isMobile, isSystemMessage, autoTranslated)
+    -- Only process messages from monitored channels
+    if not MONITORED_CHANNELS[channelName] then
+        return
+    end
+    
+    -- Skip if no parser or data module
+    if not Parser or not RoleCall then
+        return
+    end
+    
+    -- Parse the message
+    local parsed = Parser:Parse(message, author)
+    if parsed then
+        -- Update or create entry in data module
+        RoleCall:UpdateEntry(author, parsed)
+        
+        -- Trigger UI update if available
+        if UI and UI.Refresh then
+            UI:Refresh()
+        end
+        
+        -- Debug output
+        self:DebugPrint(string.format(
+            "[%s] %s: %s (%s) - %s",
+            channelName,
+            parsed.player,
+            parsed.dungeon,
+            parsed.lfm and "LFM" or "LFG",
+            parsed.level and "Lv" .. parsed.level or "?"
+        ))
+    end
+end
+
+-- Debug print to chat frame
+function Core:DebugPrint(msg)
+    if DEFAULT_CHAT_FRAME then
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[RoleCall]|r " .. msg)
+    end
+end
+
+-- Initialize addon
+function Core:OnAddonLoaded(addon)
+    if addon ~= "RoleCall" then return end
+    
+    self:DebugPrint("RoleCall Classic v0.1.0 loaded!")
+    self:DebugPrint("Monitoring LookingForGroup and Trade channels.")
+    
+    -- Initialize UI if available
+    if UI and UI.Initialize then
+        UI:Initialize()
+        self:DebugPrint("UI initialized. Type /rc to show the board.")
+    end
+end
+
+-- Event dispatcher
+eventFrame:SetScript("OnEvent", function(self, event, ...)
+    if event == "CHAT_MSG_CHANNEL" or event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
+        Core:OnChatMessage(event, ...)
+    elseif event == "ADDON_LOADED" then
+        Core:OnAddonLoaded(...)
+    end
+end)
+
+-- Slash command to show/toggle board
+SLASH_ROLECALL1 = "/rc"
+SlashCmdList["ROLECALL"] = function(msg)
+    if UI and UI.Toggle then
+        UI:Toggle()
+    end
+end
+
+_G.Core = Core
