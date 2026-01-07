@@ -3,6 +3,25 @@
 
 local UI = {}
 
+-- Backdrop helper to support modern client restrictions
+local function ApplyBackdrop(frame, backdrop, r, g, b, a)
+    if frame.SetBackdrop then
+        frame:SetBackdrop(backdrop)
+        if r and g and b and a then
+            frame:SetBackdropColor(r, g, b, a)
+        end
+    else
+        -- Fallback: simple color texture
+        if not frame._bgTex then
+            frame._bgTex = frame:CreateTexture(nil, "BACKGROUND")
+            frame._bgTex:SetAllPoints()
+        end
+        if r and g and b and a then
+            frame._bgTex:SetColorTexture(r, g, b, a)
+        end
+    end
+end
+
 -- Main board frame
 UI.frame = nil
 UI.scrollFrame = nil
@@ -12,6 +31,9 @@ UI.maxVisibleRows = 15
 
 -- Initialize the UI
 function UI:Initialize()
+    if not UIParent then
+        error("UIParent not available")
+    end
     self:CreateMainFrame()
     self:CreateScrollFrame()
 end
@@ -22,18 +44,21 @@ function UI:CreateMainFrame()
         return  -- Already created
     end
     
-    local frame = CreateFrame("Frame", "RoleCallMainFrame", UIParent)
+    if not UIParent then
+        error("UIParent not available")
+    end
+    
+    local frame = CreateFrame("Frame", "RoleCallMainFrame", UIParent, "BackdropTemplate")
     frame:SetSize(600, 400)
     frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    frame:SetBackdrop({
+    ApplyBackdrop(frame, {
         bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
         edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
         tile = true,
         tileSize = 32,
         edgeSize = 32,
         insets = {left = 11, right = 12, top = 12, bottom = 11}
-    })
-    frame:SetBackdropColor(0, 0, 0, 0.8)
+    }, 0, 0, 0, 0.8)
     
     -- Title bar
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -119,16 +144,19 @@ function UI:CreateEntryRow(index, entry)
         return nil
     end
     
-    local row = CreateFrame("Button", "RoleCallRow" .. index, self.contentFrame)
+    local row = CreateFrame("Button", "RoleCallRow" .. index, self.contentFrame, "BackdropTemplate")
     row:SetSize(self.contentFrame:GetWidth(), self.rowHeight)
     row:SetPoint("TOPLEFT", self.contentFrame, "TOPLEFT", 0, -(index - 1) * self.rowHeight)
     
     -- Alternating row colors
-    if index % 2 == 0 then
-        row:SetBackdropColor(0.1, 0.1, 0.15, 0.5)
-    else
-        row:SetBackdropColor(0, 0, 0, 0.3)
+    local function setBaseColor()
+        if index % 2 == 0 then
+            ApplyBackdrop(row, {bgFile = "Interface/Tooltips/UI-Tooltip-Background"}, 0.1, 0.1, 0.15, 0.5)
+        else
+            ApplyBackdrop(row, {bgFile = "Interface/Tooltips/UI-Tooltip-Background"}, 0, 0, 0, 0.3)
+        end
     end
+    setBaseColor()
     
     -- Row data
     row.entry = entry
@@ -173,15 +201,11 @@ function UI:CreateEntryRow(index, entry)
     
     -- Hover highlight and click to whisper
     row:SetScript("OnEnter", function()
-        row:SetBackdropColor(0.2, 0.2, 0.3, 0.8)
+        ApplyBackdrop(row, {bgFile = "Interface/Tooltips/UI-Tooltip-Background"}, 0.2, 0.2, 0.3, 0.8)
     end)
     
     row:SetScript("OnLeave", function()
-        if index % 2 == 0 then
-            row:SetBackdropColor(0.1, 0.1, 0.15, 0.5)
-        else
-            row:SetBackdropColor(0, 0, 0, 0.3)
-        end
+        setBaseColor()
     end)
     
     row:SetScript("OnClick", function()

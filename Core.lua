@@ -67,24 +67,35 @@ function Core:OnAddonLoaded(addon)
     
     -- Initialize UI if available
     if UI and UI.Initialize then
-        UI:Initialize()
-        self:DebugPrint("UI initialized. Type /rolecall or /rcc to show the board.")
+        local success, err = pcall(function()
+            UI:Initialize()
+        end)
+        if success then
+            self:DebugPrint("UI initialized. Type /rolecall or /rcc to show the board.")
+        else
+            self:DebugPrint("ERROR: Failed to initialize UI: " .. tostring(err))
+        end
+    else
+        self:DebugPrint("WARNING: UI module not found!")
     end
     
     -- Register slash commands after all modules are loaded
-    SLASH_ROLECALL1 = "/rolecall"
-    SLASH_ROLECALL2 = "/rcc"
-    SlashCmdList["ROLECALL"] = function(msg)
-        if UI and UI.Toggle then
-            UI:Toggle()
-            if Core and Core.DebugPrint then
+    local success, err = pcall(function()
+        SLASH_ROLECALL1 = "/rolecall"
+        SLASH_ROLECALL2 = "/rcc"
+        SlashCmdList["ROLECALL"] = function(msg)
+            if UI and UI.Toggle then
+                UI:Toggle()
                 Core:DebugPrint("Slash command invoked; toggled board.")
-            end
-        else
-            if Core and Core.DebugPrint then
+            else
                 Core:DebugPrint("Slash command received but UI is not available.")
             end
         end
+    end)
+    if not success then
+        self:DebugPrint("ERROR: Failed to register slash commands: " .. tostring(err))
+    else
+        self:DebugPrint("Slash commands registered successfully.")
     end
 end
 
