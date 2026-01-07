@@ -70,6 +70,22 @@ function Core:OnAddonLoaded(addon)
         UI:Initialize()
         self:DebugPrint("UI initialized. Type /rolecall or /rcc to show the board.")
     end
+    
+    -- Register slash commands after all modules are loaded
+    SLASH_ROLECALL1 = "/rolecall"
+    SLASH_ROLECALL2 = "/rcc"
+    SlashCmdList["ROLECALL"] = function(msg)
+        if UI and UI.Toggle then
+            UI:Toggle()
+            if Core and Core.DebugPrint then
+                Core:DebugPrint("Slash command invoked; toggled board.")
+            end
+        else
+            if Core and Core.DebugPrint then
+                Core:DebugPrint("Slash command received but UI is not available.")
+            end
+        end
+    end
 end
 
 -- Event dispatcher
@@ -80,14 +96,5 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
         Core:OnAddonLoaded(...)
     end
 end)
-
--- Slash command to show/toggle board (avoid conflict with Blizzard /rc ready check)
-SLASH_ROLECALL1 = "/rolecall"
-SLASH_ROLECALL2 = "/rcc"
-SlashCmdList["ROLECALL"] = function(msg)
-    if UI and UI.Toggle then
-        UI:Toggle()
-    end
-end
 
 _G.Core = Core
