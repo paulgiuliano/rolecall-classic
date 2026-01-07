@@ -13,7 +13,7 @@ Designed for **Classic Anniversary servers** (e.g. Dreamscythe) with a clear tra
 3. Ensure the files are directly inside `RoleCall` (no extra nested folder).
 4. On the character select screen, click AddOns and enable "Load out of date AddOns" if needed.
 5. Reload UI or restart WoW.
-6. Type `/rc` to toggle the RoleCall board.
+6. Type `/rolecall` (or `/rcc`) to toggle the RoleCall board.
 
 ## Features
 
@@ -69,7 +69,7 @@ RoleCall/
 - [x] Row highlighting on hover
 - [x] Click-to-whisper with contextual templates
 - [x] Debug chat output
-- [x] `/rc` slash command
+- [x] `/rolecall` (alias `/rcc`) slash command
 
 ### Phase 2: TBC-Specific Features 🔜
 
@@ -159,7 +159,7 @@ entry = {
 
 ### Slash Commands
 
-- `/rc` — Toggle board visibility
+- `/rolecall` or `/rcc` — Toggle board visibility
 
 ## Design Philosophy
 
