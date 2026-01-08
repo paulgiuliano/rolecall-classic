@@ -142,6 +142,21 @@ function UI:CreateMainFrame()
     title:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -15)
     title:SetText("RoleCall Classic - LFG Board")
     
+    -- Clear Board button
+    local clearBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    clearBtn:SetSize(100, 22)
+    clearBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -35, -12)
+    clearBtn:SetText("Clear Board")
+    clearBtn:SetScript("OnClick", function()
+        if RoleCall and RoleCall.ClearAll then
+            RoleCall:ClearAll()
+            UI:Refresh()
+            if Core and Core.DebugPrint then
+                Core:DebugPrint("Board cleared manually.")
+            end
+        end
+    end)
+    
     -- Close button
     local closeBtn = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)

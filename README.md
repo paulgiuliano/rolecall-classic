@@ -95,7 +95,9 @@ RoleCall/
 
 ### Performance & Stability 🔜
 
-- [ ] Entry pruning on excessive backlog (prevent memory bloat)
+- [x] Entry pruning on excessive backlog (prevent memory bloat)
+  - Automatic: Entries older than 10 minutes are pruned every 60 seconds
+  - Manual: "Clear Board" button for instant clearing of all entries
 - [ ] Better error handling for malformed messages
 - [ ] Unit tests for parser regex patterns
 - [ ] Performance optimization for high chat volume

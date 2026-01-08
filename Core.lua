@@ -83,6 +83,17 @@ function Core:OnAddonLoaded(addon)
     self:DebugPrint("RoleCall Classic v0.1.0 loaded!")
     self:DebugPrint("Monitoring LookingForGroup and Trade channels.")
     
+    -- Start automatic entry pruning (every 60 seconds, prune entries older than 10 minutes)
+    C_Timer.NewTicker(60, function()
+        if RoleCall and RoleCall.PruneOldEntries then
+            RoleCall:PruneOldEntries(600)  -- 10 minutes
+            -- Refresh UI if visible and RoleCall has changed
+            if UI and UI.Refresh and UI.frame and UI.frame:IsShown() then
+                UI:Refresh()
+            end
+        end
+    end)
+    
     -- Initialize UI if available
     if UI and UI.Initialize then
         local success, err = pcall(function()
