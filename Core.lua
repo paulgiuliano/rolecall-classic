@@ -3,6 +3,9 @@
 
 local Core = {}
 
+-- Chat notifications enabled flag
+Core.notificationsEnabled = true
+
 -- Initialize event frame
 local eventFrame = CreateFrame("Frame", "RoleCallEventFrame")
 eventFrame:RegisterEvent("CHAT_MSG_CHANNEL")
@@ -71,9 +74,15 @@ end
 
 -- Debug print to chat frame
 function Core:DebugPrint(msg)
-    if DEFAULT_CHAT_FRAME then
+    if self.notificationsEnabled and DEFAULT_CHAT_FRAME then
         DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[RoleCall]|r " .. msg)
     end
+end
+
+-- Toggle chat notifications on/off
+function Core:ToggleNotifications()
+    self.notificationsEnabled = not self.notificationsEnabled
+    return self.notificationsEnabled
 end
 
 -- Initialize addon

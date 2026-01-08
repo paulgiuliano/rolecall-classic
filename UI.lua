@@ -142,11 +142,37 @@ function UI:CreateMainFrame()
     title:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -15)
     title:SetText("RoleCall Classic - LFG Board")
     
+    -- Notifications toggle button
+    local notifyBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    notifyBtn:SetSize(50, 22)
+    notifyBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -125, -12)
+    notifyBtn:SetText("Notify")
+    notifyBtn:SetScript("OnClick", function()
+        if Core and Core.ToggleNotifications then
+            local enabled = Core:ToggleNotifications()
+            notifyBtn:SetText(enabled and "Notify" or "Mute")
+            -- Color the text based on state
+            local fontString = notifyBtn:GetFontString()
+            if fontString then
+                if enabled then
+                    fontString:SetTextColor(0, 1, 0)  -- Green
+                else
+                    fontString:SetTextColor(1, 0, 0)  -- Red
+                end
+            end
+        end
+    end)
+    -- Set initial color
+    local notifyFontString = notifyBtn:GetFontString()
+    if notifyFontString then
+        notifyFontString:SetTextColor(0, 1, 0)  -- Green for ON
+    end
+    
     -- Clear Board button
     local clearBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    clearBtn:SetSize(100, 22)
-    clearBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -35, -12)
-    clearBtn:SetText("Clear Board")
+    clearBtn:SetSize(80, 22)
+    clearBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -50, -12)
+    clearBtn:SetText("Clear")
     clearBtn:SetScript("OnClick", function()
         if RoleCall and RoleCall.ClearAll then
             RoleCall:ClearAll()
