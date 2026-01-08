@@ -113,7 +113,9 @@ function UI:CreateMainFrame()
         local rightPadding = 40
         return sumMin + leftPadding + rightPadding
     end)()
-    frame:SetResizeBounds(minWidth, 260, 1400, 900)
+    -- Lock width to default, allow vertical resize only
+    local defaultWidth = 900
+    frame:SetResizeBounds(defaultWidth, 260, defaultWidth, 900)
     
     -- Handle resize to update scroll frame
     frame:SetScript("OnSizeChanged", function(self, width, height)
@@ -148,7 +150,7 @@ function UI:CreateMainFrame()
     -- Resize grip
     local resizeBtn = CreateFrame("Button", nil, frame)
     resizeBtn:SetSize(20, 20)
-    resizeBtn:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 5, 5)
+    resizeBtn:SetPoint("BOTTOM", frame, "BOTTOM", 0, 5)
     resizeBtn:EnableMouse(true)
     resizeBtn:SetFrameLevel(frame:GetFrameLevel() + 10)
     
@@ -166,7 +168,7 @@ function UI:CreateMainFrame()
     
     resizeBtn:SetScript("OnMouseDown", function(self, button)
         if button == "LeftButton" then
-            frame:StartSizing("BOTTOMLEFT")
+            frame:StartSizing("BOTTOM")
         end
     end)
     resizeBtn:SetScript("OnMouseUp", function(self, button)
