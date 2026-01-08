@@ -25,6 +25,7 @@ Designed for **Classic Anniversary servers** (e.g. Dreamscythe) with a clear tra
 - ✅ **Whisper Templates** — Click any entry to prefill a contextual whisper (fully manual, Classic-compliant)
 - ✅ **Event Monitoring** — Listens to LookingForGroup and Trade channels
 - ✅ **Zero Configuration** — Works immediately after loading
+- ✅ **Quiet Mode (Notify/Mute)** — Toggle chat notifications while entries continue to populate the board
 
 ### Dungeon Support
 
@@ -162,6 +163,11 @@ entry = {
 ### Slash Commands
 
 - `/rolecall` or `/rcc` — Toggle board visibility
+
+### Board Controls
+
+- Notify/Mute — Toggle chat notifications; new entries still appear on the board
+- Clear — Remove all entries from the board instantly
 
 ## Design Philosophy
 
