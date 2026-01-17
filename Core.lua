@@ -117,6 +117,18 @@ function Core:OnAddonLoaded(addon)
         self:DebugPrint("WARNING: UI module not found!")
     end
     
+    -- Initialize minimap button if available
+    if MinimapButton and MinimapButton.Initialize then
+        local success, err = pcall(function()
+            MinimapButton:Initialize()
+        end)
+        if success then
+            self:DebugPrint("Minimap button initialized.")
+        else
+            self:DebugPrint("ERROR: Failed to initialize minimap button: " .. tostring(err))
+        end
+    end
+    
     -- Register slash commands after all modules are loaded
     local success, err = pcall(function()
         SLASH_ROLECALL1 = "/rolecall"
