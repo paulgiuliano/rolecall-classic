@@ -4,7 +4,7 @@
 local Core = {}
 
 -- Chat notifications enabled flag
-Core.notificationsEnabled = true
+Core.notificationsEnabled = false
 
 -- Initialize event frame
 local eventFrame = CreateFrame("Frame", "RoleCallEventFrame")

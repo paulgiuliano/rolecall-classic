@@ -146,7 +146,7 @@ function UI:CreateMainFrame()
     local notifyBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
     notifyBtn:SetSize(50, 22)
     notifyBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -125, -12)
-    notifyBtn:SetText("Notify")
+    notifyBtn:SetText("Mute")
     notifyBtn:SetScript("OnClick", function()
         if Core and Core.ToggleNotifications then
             local enabled = Core:ToggleNotifications()
@@ -165,7 +165,7 @@ function UI:CreateMainFrame()
     -- Set initial color
     local notifyFontString = notifyBtn:GetFontString()
     if notifyFontString then
-        notifyFontString:SetTextColor(0, 1, 0)  -- Green for ON
+        notifyFontString:SetTextColor(1, 0, 0)  -- Red for OFF
     end
     
     -- Clear Board button
