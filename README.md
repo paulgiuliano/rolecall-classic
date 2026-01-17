@@ -209,3 +209,10 @@ When contributing, please maintain:
 MIT License — See [LICENSE](LICENSE) file for details.
 
 This addon is free to use, modify, and distribute under the terms of the MIT License.
+
+## Support
+
+Enjoying RoleCall Classic? Totally optional, but in-game gold tips are appreciated!
+
+- Contact: laz0rviking#1397
+- Character: Dunemule (Dreamscythe)
