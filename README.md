@@ -181,7 +181,28 @@ entry = {
 
 ## Contributing
 
-Issues and PRs welcome! Please maintain the design philosophy and Classic-compliance.
+**RoleCall Classic is open-source!** We welcome issues, bug reports, and pull requests.
+
+### Links
+
+- **GitHub Repository**: [paulgiuliano/rolecall-classic](https://github.com/paulgiuliano/rolecall-classic)
+- **Issue Tracker**: [GitHub Issues](https://github.com/paulgiuliano/rolecall-classic/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/paulgiuliano/rolecall-classic/discussions)
+
+### How to Contribute
+
+1. **Report bugs** — Found an issue? [Open an issue](https://github.com/paulgiuliano/rolecall-classic/issues/new) with details
+2. **Request features** — Have an idea? [Start a discussion](https://github.com/paulgiuliano/rolecall-classic/discussions) or open a feature request
+3. **Submit code** — Fork the repo, make changes, and submit a pull request
+4. **Improve docs** — Documentation improvements are always welcome
+
+### Design Philosophy
+
+When contributing, please maintain:
+- **Classic compliance** — No automation, no matchmaking, fully manual
+- **Zero configuration** — Features should work out-of-the-box
+- **Minimal visual noise** — Keep the UI clean and readable
+- **Performance focus** — Consider memory and CPU impact
 
 ## License
 
