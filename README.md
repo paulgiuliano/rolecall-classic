@@ -99,6 +99,7 @@ RoleCall/
   2. Clean RoleCall board
   3. Whisper template preview
 - [x] Version set to 0.1.0 in manifest
+ - [ ] Automate packaging/upload via GitHub Actions (BigWigs packager)
 
 ### Open Design Questions
 
