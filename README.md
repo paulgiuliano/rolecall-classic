@@ -6,6 +6,8 @@ RoleCall Classic is a World of Warcraft Classic addon that parses LFG-related ch
 
 Designed for **Classic Anniversary servers** (e.g. Dreamscythe) with a clear transition path into **The Burning Crusade**.
 
+![RoleCall Board](screenshot-board.png)
+
 ## Quick Start
 
 1. Copy the folder to your WoW Classic AddOns directory: `C:/Program Files (x86)/World of Warcraft/_classic_/Interface/AddOns/`
