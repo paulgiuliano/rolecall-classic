@@ -90,14 +90,16 @@ RoleCall/
 - [x] Error handling with graceful fallback
 - [x] Board controls (Notify/Mute, Clear)
 
-### CurseForge Release 🔜
+### CurseForge Release ✅
 
+- [x] Create release notes and changelog ([CHANGELOG.md](CHANGELOG.md))
+- [x] Set up license ([LICENSE](LICENSE))
 - [ ] Generate/collect screenshots:
   1. Raw LFG chat spam
   2. Clean RoleCall board
   3. Whisper template preview
-- [ ] Create release notes and changelog
-- [ ] Upload to CurseForge with proper versioning
+- [x] Version set to 0.1.0 in manifest
+ - [ ] Automate packaging/upload via GitHub Actions (BigWigs packager)
 
 ### Open Design Questions
 
@@ -111,10 +113,20 @@ RoleCall/
 - ✅ No external dependencies
 - ✅ No automation (fully manual, fully legal)
 
-## Installation Notes
+## Installation
 
-- Folder name must match the `.toc` filename. This addon’s manifest is `RoleCall.toc`, so the folder must be named `RoleCall`.
-- Final path should look like: `.../Interface/AddOns/RoleCall/` with these files inside: [RoleCall.toc](RoleCall.toc), [Core.lua](Core.lua), [Parser.lua](Parser.lua), [UI.lua](UI.lua), [Whisper.lua](Whisper.lua), [Data.lua](Data.lua).
+### From CurseForge
+
+1. Visit the [RoleCall Classic CurseForge page](https://www.curseforge.com/wow/addons/rolecall-classic)
+2. Download the latest version
+3. Extract to your WoW Classic AddOns folder: `C:/Program Files (x86)/World of Warcraft/_classic_/Interface/AddOns/`
+4. Ensure the folder is named `RoleCall` (not `rolecall-classic`)
+5. Reload UI or restart WoW
+
+### Manual Installation
+
+- Folder name must match the `.toc` filename. This addon's manifest is `RoleCall.toc`, so the folder must be named `RoleCall`.
+- Final path should look like: `.../Interface/AddOns/RoleCall/` with these files inside: [RoleCall.toc](RoleCall.toc), [Core.lua](Core.lua), [Parser.lua](Parser.lua), [UI.lua](UI.lua), [Whisper.lua](Whisper.lua), [Data.lua](Data.lua), [Minimap.lua](Minimap.lua).
 - If the addon does not appear in the AddOns list, double-check for an extra nested folder (e.g., `RoleCall/rolecall-classic/`), and move files up one level.
 - If your client’s Interface number is newer than `11500`, toggle "Load out of date AddOns" to allow loading until the manifest is updated.
 
@@ -170,8 +182,38 @@ entry = {
 
 ## Contributing
 
-Issues and PRs welcome! Please maintain the design philosophy and Classic-compliance.
+**RoleCall Classic is open-source!** We welcome issues, bug reports, and pull requests.
+
+### Links
+
+- **GitHub Repository**: [paulgiuliano/rolecall-classic](https://github.com/paulgiuliano/rolecall-classic)
+- **Issue Tracker**: [GitHub Issues](https://github.com/paulgiuliano/rolecall-classic/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/paulgiuliano/rolecall-classic/discussions)
+
+### How to Contribute
+
+1. **Report bugs** — Found an issue? [Open an issue](https://github.com/paulgiuliano/rolecall-classic/issues/new) with details
+2. **Request features** — Have an idea? [Start a discussion](https://github.com/paulgiuliano/rolecall-classic/discussions) or open a feature request
+3. **Submit code** — Fork the repo, make changes, and submit a pull request
+4. **Improve docs** — Documentation improvements are always welcome
+
+### Design Philosophy
+
+When contributing, please maintain:
+- **Classic compliance** — No automation, no matchmaking, fully manual
+- **Zero configuration** — Features should work out-of-the-box
+- **Minimal visual noise** — Keep the UI clean and readable
+- **Performance focus** — Consider memory and CPU impact
 
 ## License
 
-TBD — Pending CurseForge submission
+MIT License — See [LICENSE](LICENSE) file for details.
+
+This addon is free to use, modify, and distribute under the terms of the MIT License.
+
+## Support
+
+Enjoying RoleCall Classic? Totally optional, but in-game gold tips are appreciated!
+
+- Contact: laz0rviking#1397
+- Character: Dunemule (Dreamscythe)
