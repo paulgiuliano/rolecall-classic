@@ -1,7 +1,10 @@
 -- Minimap.lua
 -- Minimap button to show/hide the RoleCall board
 
-local Minimap = {}
+local MinimapButton = {}
+
+-- Make it globally available immediately
+_G.MinimapButton = MinimapButton
 
 -- Saved variables for minimap button position
 RoleCallMinimapDB = RoleCallMinimapDB or {
@@ -11,13 +14,13 @@ RoleCallMinimapDB = RoleCallMinimapDB or {
 }
 
 -- Create the minimap button
-function Minimap:Initialize()
+function MinimapButton:Initialize()
     if self.button then
         return -- Already created
     end
     
-    -- Create the button frame
-    local button = CreateFrame("Button", "RoleCallMinimapButton", Minimap, "BackdropTemplate")
+    -- Create the button frame (parent to the game's Minimap frame)
+    local button = CreateFrame("Button", "RoleCallMinimapButton", Minimap)
     button:SetSize(31, 31)
     button:SetFrameStrata("MEDIUM")
     button:SetFrameLevel(8)
@@ -84,7 +87,7 @@ function Minimap:Initialize()
         self:LockHighlight()
         self.isMoving = true
         self:SetScript("OnUpdate", function(self)
-            Minimap:UpdatePosition()
+            MinimapButton:UpdatePosition()
         end)
     end)
     
@@ -103,10 +106,15 @@ function Minimap:Initialize()
     else
         button:Show()
     end
+    
+    -- Debug output
+    if DEFAULT_CHAT_FRAME then
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[RoleCall]|r Minimap button created at position " .. (RoleCallMinimapDB.minimapPos or 220))
+    end
 end
 
 -- Update button position around the minimap
-function Minimap:UpdatePosition()
+function MinimapButton:UpdatePosition()
     if not self.button then return end
     
     local button = self.button
@@ -133,7 +141,7 @@ function Minimap:UpdatePosition()
 end
 
 -- Show the minimap button
-function Minimap:Show()
+function MinimapButton:Show()
     if self.button then
         self.button:Show()
         RoleCallMinimapDB.hide = false
@@ -141,7 +149,7 @@ function Minimap:Show()
 end
 
 -- Hide the minimap button
-function Minimap:Hide()
+function MinimapButton:Hide()
     if self.button then
         self.button:Hide()
         RoleCallMinimapDB.hide = true
@@ -149,7 +157,7 @@ function Minimap:Hide()
 end
 
 -- Toggle minimap button visibility
-function Minimap:Toggle()
+function MinimapButton:Toggle()
     if self.button then
         if self.button:IsShown() then
             self:Hide()
@@ -158,5 +166,3 @@ function Minimap:Toggle()
         end
     end
 end
-
-_G.MinimapButton = Minimap
