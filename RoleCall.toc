@@ -1,7 +1,7 @@
 ## Interface: 11500
 ## Title: RoleCall Classic
 ## Notes: Parse LFG chat into a clean, readable board. Zero configuration, zero automation.
-## Author: RoleCall Dev Team
+## Author: Paul Giuliano (laz0rviking#1397)
 ## Version: 0.1.0
 ## SavedVariables: RoleCallMinimapDB
 
