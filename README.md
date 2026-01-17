@@ -47,30 +47,16 @@ Recognized dungeons with aliases:
 ```
 RoleCall/
   RoleCall.toc      -- Addon manifest
-  Core.lua          -- Event handling, chat capture
+  Core.lua          -- Event handling, chat capture, slash commands
   Parser.lua        -- Message parsing and intent extraction
-  UI.lua            -- Board frame, entry rows, rendering
+  UI.lua            -- Board frame with scrolling, sorting, entry rows, rendering
   Whisper.lua       -- Whisper template generation
   Data.lua          -- In-memory session storage
+  Minimap.lua       -- Minimap button for quick access
   README.md         -- This file
 ```
 
 ## TODO
-
-### MVP Completion ✅
-
-- [x] Chat listener for LookingForGroup and Trade channels
-- [x] Dungeon name normalization and parsing
-- [x] Role extraction (Tank, Healer, DPS)
-- [x] Player level detection
-- [x] LFM vs LFG classification
-- [x] Basic UI frame with scrollable entry list
-- [x] De-duplication by player name with repost counter
-- [x] Timestamp tracking and "time ago" display
-- [x] Row highlighting on hover
-- [x] Click-to-whisper with contextual templates
-- [x] Debug chat output
-- [x] `/rolecall` (alias `/rcc`) slash command
 
 ### Phase 2: TBC-Specific Features 🔜
 
@@ -87,6 +73,8 @@ RoleCall/
 - [ ] Compact vs expanded UI modes
 - [ ] Configurable max entry age before auto-pruning
 - [ ] Option to auto-hide boosting/selling messages
+- [ ] Column width customization
+- [ ] User-extensible dungeon abbreviations
 
 ### Whisper Template Improvements 🔜
 
@@ -94,14 +82,13 @@ RoleCall/
 - [ ] Remember recent whisper templates
 - [ ] Customizable template presets per role
 
-### Performance & Stability 🔜
+### Performance & Stability ✅
 
 - [x] Entry pruning on excessive backlog (prevent memory bloat)
   - Automatic: Entries older than 10 minutes are pruned every 60 seconds
   - Manual: "Clear Board" button for instant clearing of all entries
-- [ ] Better error handling for malformed messages
-- [ ] Unit tests for parser regex patterns
-- [ ] Performance optimization for high chat volume
+- [x] Error handling with graceful fallback
+- [x] Board controls (Notify/Mute, Clear)
 
 ### CurseForge Release 🔜
 
@@ -164,10 +151,14 @@ entry = {
 
 - `/rolecall` or `/rcc` — Toggle board visibility
 
-### Board Controls
+## Board Controls
 
-- Notify/Mute — Toggle chat notifications; new entries still appear on the board
-- Clear — Remove all entries from the board instantly
+- **Notify/Mute** — Toggle chat notifications; new entries still appear on the board
+- **Clear** — Remove all entries from the board instantly
+- **Draggable Title Bar** — Reposition the board anywhere on screen
+- **Resizable** — Drag the bottom-right corner to resize
+- **Sortable Columns** — Click column headers to sort by Dungeon, Roles, Player, Level, or Time
+- **Click-to-Whisper** — Click any entry to prefill a contextual whisper
 
 ## Design Philosophy
 
