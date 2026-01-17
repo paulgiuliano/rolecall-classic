@@ -90,14 +90,15 @@ RoleCall/
 - [x] Error handling with graceful fallback
 - [x] Board controls (Notify/Mute, Clear)
 
-### CurseForge Release 🔜
+### CurseForge Release ✅
 
+- [x] Create release notes and changelog ([CHANGELOG.md](CHANGELOG.md))
+- [x] Set up license ([LICENSE](LICENSE))
 - [ ] Generate/collect screenshots:
   1. Raw LFG chat spam
   2. Clean RoleCall board
   3. Whisper template preview
-- [ ] Create release notes and changelog
-- [ ] Upload to CurseForge with proper versioning
+- [x] Version set to 0.1.0 in manifest
 
 ### Open Design Questions
 
@@ -111,10 +112,20 @@ RoleCall/
 - ✅ No external dependencies
 - ✅ No automation (fully manual, fully legal)
 
-## Installation Notes
+## Installation
 
-- Folder name must match the `.toc` filename. This addon’s manifest is `RoleCall.toc`, so the folder must be named `RoleCall`.
-- Final path should look like: `.../Interface/AddOns/RoleCall/` with these files inside: [RoleCall.toc](RoleCall.toc), [Core.lua](Core.lua), [Parser.lua](Parser.lua), [UI.lua](UI.lua), [Whisper.lua](Whisper.lua), [Data.lua](Data.lua).
+### From CurseForge
+
+1. Visit the [RoleCall Classic CurseForge page](https://www.curseforge.com/wow/addons/rolecall-classic)
+2. Download the latest version
+3. Extract to your WoW Classic AddOns folder: `C:/Program Files (x86)/World of Warcraft/_classic_/Interface/AddOns/`
+4. Ensure the folder is named `RoleCall` (not `rolecall-classic`)
+5. Reload UI or restart WoW
+
+### Manual Installation
+
+- Folder name must match the `.toc` filename. This addon's manifest is `RoleCall.toc`, so the folder must be named `RoleCall`.
+- Final path should look like: `.../Interface/AddOns/RoleCall/` with these files inside: [RoleCall.toc](RoleCall.toc), [Core.lua](Core.lua), [Parser.lua](Parser.lua), [UI.lua](UI.lua), [Whisper.lua](Whisper.lua), [Data.lua](Data.lua), [Minimap.lua](Minimap.lua).
 - If the addon does not appear in the AddOns list, double-check for an extra nested folder (e.g., `RoleCall/rolecall-classic/`), and move files up one level.
 - If your client’s Interface number is newer than `11500`, toggle "Load out of date AddOns" to allow loading until the manifest is updated.
 
@@ -174,4 +185,6 @@ Issues and PRs welcome! Please maintain the design philosophy and Classic-compli
 
 ## License
 
-TBD — Pending CurseForge submission
+MIT License — See [LICENSE](LICENSE) file for details.
+
+This addon is free to use, modify, and distribute under the terms of the MIT License.

@@ -1,0 +1,9 @@
+package-as: RoleCall
+
+enable-nolib-creation: no
+
+ignore:
+  - STARTER.md
+  - deploy.ps1
+  - .git
+  - .gitignore
