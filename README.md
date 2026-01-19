@@ -111,7 +111,7 @@ RoleCall/
 
 ## API Compliance
 
-- ✅ TBC Classic Anniversary API compliant (Interface 20504)
+- ✅ TBC Classic Anniversary API compliant (Interface 20505)
 - ✅ No external dependencies
 - ✅ No automation (fully manual, fully legal)
 

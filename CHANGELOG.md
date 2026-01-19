@@ -6,12 +6,12 @@ All notable changes to RoleCall Classic will be documented in this file.
 
 ### Changed
 
-- **TBC Classic Anniversary Support** — Updated interface version to 20504 for Burning Crusade Classic Anniversary
+- **TBC Classic Anniversary Support** — Updated interface version to 20505 for Burning Crusade Classic Anniversary
 - Version bumped to 0.2.0 for TBC Classic Anniversary release
 
 ### Notes
 
-- This version targets TBC Classic Anniversary only (Interface 20504)
+- This version targets TBC Classic Anniversary only (Interface 20505)
 - For original Classic Anniversary (1.15), use version 0.1.0
 
 ## [0.1.0] - 2026-01-17
