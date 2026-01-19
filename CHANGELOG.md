@@ -2,6 +2,18 @@
 
 All notable changes to RoleCall Classic will be documented in this file.
 
+## [0.2.0] - 2026-01-18
+
+### Changed
+
+- **TBC Classic Anniversary Support** — Updated interface version to 20504 for Burning Crusade Classic Anniversary
+- Version bumped to 0.2.0 for TBC Classic Anniversary release
+
+### Notes
+
+- This version targets TBC Classic Anniversary only (Interface 20504)
+- For original Classic Anniversary (1.15), use version 0.1.0
+
 ## [0.1.0] - 2026-01-17
 
 ### Initial Release
@@ -41,5 +53,5 @@ First stable release of RoleCall Classic addon for World of Warcraft Classic Ann
 - No automation or auto-invite
 - No matchmaking or group creation
 - Fully manual, fully legal
-- API compliant with Classic (Interface 11500)
+- API compliant with TBC Classic Anniversary (Interface 20504)
 - No external dependencies

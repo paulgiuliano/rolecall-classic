@@ -89,7 +89,7 @@ end
 function Core:OnAddonLoaded(addon)
     if addon ~= "RoleCall" then return end
     
-    self:DebugPrint("RoleCall Classic v0.1.0 loaded!")
+    self:DebugPrint("RoleCall Classic v0.2.0 loaded!")
     self:DebugPrint("Monitoring LookingForGroup and Trade channels.")
     
     -- Start automatic entry pruning (every 60 seconds, prune entries older than 10 minutes)
