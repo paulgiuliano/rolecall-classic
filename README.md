@@ -4,7 +4,7 @@
 
 RoleCall Classic is a World of Warcraft Classic addon that parses LFG-related chat messages into a clean, readable board — without automation, without breaking Classic rules, and without clutter.
 
-Designed for **Classic Anniversary servers** (e.g. Dreamscythe) with a clear transition path into **The Burning Crusade**.
+Designed for **The Burning Crusade Classic Anniversary** servers.
 
 ![RoleCall Board](screenshot-board.png)
 
@@ -100,7 +100,7 @@ RoleCall/
   1. Raw LFG chat spam
   2. Clean RoleCall board
   3. Whisper template preview
-- [x] Version set to 0.1.0 in manifest
+- [x] Version set to 0.2.0 in manifest
  - [ ] Automate packaging/upload via GitHub Actions (BigWigs packager)
 
 ### Open Design Questions
@@ -111,7 +111,7 @@ RoleCall/
 
 ## API Compliance
 
-- ✅ Classic API compliant (Interface 11500)
+- ✅ TBC Classic Anniversary API compliant (Interface 20505)
 - ✅ No external dependencies
 - ✅ No automation (fully manual, fully legal)
 
@@ -130,7 +130,7 @@ RoleCall/
 - Folder name must match the `.toc` filename. This addon's manifest is `RoleCall.toc`, so the folder must be named `RoleCall`.
 - Final path should look like: `.../Interface/AddOns/RoleCall/` with these files inside: [RoleCall.toc](RoleCall.toc), [Core.lua](Core.lua), [Parser.lua](Parser.lua), [UI.lua](UI.lua), [Whisper.lua](Whisper.lua), [Data.lua](Data.lua), [Minimap.lua](Minimap.lua).
 - If the addon does not appear in the AddOns list, double-check for an extra nested folder (e.g., `RoleCall/rolecall-classic/`), and move files up one level.
-- If your client’s Interface number is newer than `11500`, toggle "Load out of date AddOns" to allow loading until the manifest is updated.
+- If your client's Interface number is newer than `20504`, toggle "Load out of date AddOns" to allow loading until the manifest is updated.
 
 ## Development Notes
 
