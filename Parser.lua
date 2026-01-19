@@ -35,10 +35,15 @@ local DUNGEON_ALIASES = {
     
     -- Low level dungeons
     ["sm"] = "SM",
+    ["scarlet monastery"] = "SM",
     ["sm cath"] = "SM Cath",
     ["sm arm"] = "SM Armory",
     ["sm lib"] = "SM Library",
     ["sm graveyard"] = "SM Graveyard",
+    
+    ["sfk"] = "SFK",
+    ["shadowfang"] = "SFK",
+    ["shadowfang keep"] = "SFK",
     
     ["bfd"] = "BFD",
     ["blackfathom"] = "BFD",
@@ -88,11 +93,12 @@ local DUNGEON_FULL_NAMES = {
     ["DM-E"] = "Dire Maul East (DM-E)",
     ["DM-W"] = "Dire Maul West (DM-W)",
     ["DMF"] = "Darkmoon Faire (DMF)",
-    ["SM"] = "Shadowfang Keep (SM)",
-    ["SM Cath"] = "Shadowfang Keep Cathedral (SM Cath)",
-    ["SM Armory"] = "Shadowfang Keep Armory (SM Armory)",
-    ["SM Library"] = "Shadowfang Keep Library (SM Library)",
-    ["SM Graveyard"] = "Shadowfang Keep Graveyard (SM Graveyard)",
+    ["SM"] = "Scarlet Monastery (SM)",
+    ["SM Cath"] = "Scarlet Monastery Cathedral (SM Cath)",
+    ["SM Armory"] = "Scarlet Monastery Armory (SM Armory)",
+    ["SM Library"] = "Scarlet Monastery Library (SM Library)",
+    ["SM Graveyard"] = "Scarlet Monastery Graveyard (SM Graveyard)",
+    ["SFK"] = "Shadowfang Keep (SFK)",
     ["BFD"] = "Blackfathom Deeps (BFD)",
     ["Wailing Caverns"] = "Wailing Caverns (WC)",
     ["Uldaman"] = "Uldaman (VC)",
@@ -133,17 +139,64 @@ local CLASS_TO_ROLE = {
 }
 
 -- Extract normalized dungeon from message
+-- Returns array of all dungeons found (to handle messages like "LFG BFD, MC attunement")
 function Parser:ExtractDungeon(message)
     local lower = string.lower(message)
+    local found = {}
+    local foundSet = {}  -- To avoid duplicates
     
-    -- Try exact matches first
+    -- Sort aliases by length (longest first) to match more specific patterns first
+    local sortedAliases = {}
     for alias, normalized in pairs(DUNGEON_ALIASES) do
-        if string.find(lower, alias, 1, true) then
-            return normalized
+        table.insert(sortedAliases, {alias = alias, normalized = normalized})
+    end
+    table.sort(sortedAliases, function(a, b) return #a.alias > #b.alias end)
+    
+    -- Try to find all matches with word boundaries
+    for _, entry in ipairs(sortedAliases) do
+        local alias = entry.alias
+        local normalized = entry.normalized
+        
+        -- Look for word boundaries around the alias
+        -- Match if alias is at start/end of string or surrounded by non-alphanumeric chars
+        local pattern = "([^%w]?)" .. alias:gsub("([%-%s])", "%%%1") .. "([^%w]?)"
+        local startPos = 1
+        
+        while startPos <= #lower do
+            local before, after, matchStart = string.match(lower, pattern, startPos)
+            
+            if before ~= nil then
+                -- Check if it's a real word boundary (start/end or non-alphanumeric)
+                local isValidMatch = true
+                
+                -- If there's a letter before or after, it's part of another word
+                if before and before:match("%w") then isValidMatch = false end
+                if after and after:match("%w") then isValidMatch = false end
+                
+                if isValidMatch and not foundSet[normalized] then
+                    table.insert(found, normalized)
+                    foundSet[normalized] = true
+                end
+                
+                startPos = (matchStart or startPos) + #alias
+            else
+                break
+            end
+        end
+        
+        -- Also check for simple word boundary case (beginning or end of string)
+        if string.find(lower, "^" .. alias .. "[^%w]") or 
+           string.find(lower, "[^%w]" .. alias .. "$") or
+           string.find(lower, "^" .. alias .. "$") then
+            if not foundSet[normalized] then
+                table.insert(found, normalized)
+                foundSet[normalized] = true
+            end
         end
     end
     
-    return nil
+    -- Return first match for backward compatibility, or nil if none found
+    return found[1]
 end
 
 -- Get full display name for a dungeon (e.g., "UBRS" -> "Upper Blackrock Spire (UBRS)")

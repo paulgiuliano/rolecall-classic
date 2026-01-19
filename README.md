@@ -38,7 +38,8 @@ Recognized dungeons with aliases:
 - Scholo (Scholomance)
 - UBRS (Upper Blackrock Spire)
 - DM / DM-N / DM-E / DM-W (Dire Maul)
-- SM Cath / SM Armory / SM Library / SM Graveyard (Scarlet Monastery)
+- SM / SM Cath / SM Armory / SM Library / SM Graveyard (Scarlet Monastery)
+- SFK (Shadowfang Keep)
 - BFD (Blackfathom Deeps)
 - Wailing Caverns
 - Uldaman
