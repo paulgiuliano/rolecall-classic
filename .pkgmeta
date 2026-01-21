@@ -7,3 +7,7 @@ ignore:
   - deploy.ps1
   - .git
   - .gitignore
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown

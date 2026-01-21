@@ -2,6 +2,20 @@
 
 All notable changes to RoleCall Classic will be documented in this file.
 
+## [0.3.1] - 2026-01-20
+
+### Maintenance
+
+- Forced tag to trigger the CurseForge webhook while debugging CI/webhook behavior
+- No code changes; same source as 0.3.0
+
+## [0.3.0] - 2026-01-19
+
+### Fixed
+
+- Miscellaneous bug fixes and stability improvements
+- Minor polish for Classic Anniversary compatibility
+
 ## [0.2.0] - 2026-01-18
 
 ### Changed
